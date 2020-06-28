@@ -6,7 +6,7 @@ PARAMS=""
 while (( "$#" )); do
   case "$1" in
     -d|--dir)
-      parentDir=$2
+      targetDir=$2
       shift 2
       ;;
     -p|--platform)
@@ -54,8 +54,8 @@ if [ -z "$version" ]; then
     printUsage
 fi
 
-if [ -z "$parentDir" ]; then
-    parentDir="$defaultInstallationRootDir/$platform/$version"
+if [ -z "$targetDir" ]; then
+    targetDir="$defaultInstallationRootDir/$platform/$version"
 fi
 
 if [ -z "$storageBaseUrl" ]; then
@@ -63,14 +63,13 @@ if [ -z "$storageBaseUrl" ]; then
 fi
 
 fileName="$platform-$version.tar.gz"
-fullInstallationPath="$parentDir/$version"
 
 PLATFORM_SETUP_START=$SECONDS
 echo
-echo "Downloading and extracting '$platform' version '$version' to '$fullInstallationPath'..."
-rm -rf "$fullInstallationPath"
-mkdir -p "$fullInstallationPath"
-cd "$fullInstallationPath"
+echo "Downloading and extracting '$platform' version '$version' to '$targetDir'..."
+rm -rf "$targetDir"
+mkdir -p "$targetDir"
+cd "$targetDir"
 PLATFORM_BINARY_DOWNLOAD_START=$SECONDS
 curl \
     -D headers.txt \
@@ -79,9 +78,12 @@ curl \
     >/dev/null 2>&1
 PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))
 echo "Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s)."
+
+# Search header name ignoring case
 echo "Verifying checksum..."
 headerName="x-ms-meta-checksum"
 checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '\r')
+# Change header and value to lowercase
 checksumHeader=$(echo $checksumHeader | tr '[A-Z]' '[a-z]')
 checksumValue=${checksumHeader#"$headerName: "}
 rm -f headers.txt
@@ -92,4 +94,6 @@ rm -f $version.tar.gz
 PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))
 echo "Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s)."
 echo
-echo > $fullInstallationPath/.oryx-sdkdownload-sentinel
+
+# Write out a sentinel file to indicate downlaod and extraction was successful
+echo > $targetDir/.oryx-sdkdownload-sentinel
