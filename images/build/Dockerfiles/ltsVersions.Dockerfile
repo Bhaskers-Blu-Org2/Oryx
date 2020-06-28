@@ -229,6 +229,8 @@ ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/l
 ENV PATH="${ORYX_PATHS}:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
+COPY images/build/dynamicInstallScripts/installPlatform.sh /opt/oryx/installPlatform
+RUN chmod +x /opt/oryx/installPlatform
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 

@@ -98,6 +98,8 @@ ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 ENV PATH="${ORYX_PATHS}:${ORIGINAL_PATH}"
 COPY images/build/benv.sh /opt/oryx/benv
 RUN chmod +x /opt/oryx/benv
+COPY images/build/dynamicInstallScripts/installPlatform.sh /opt/oryx/installPlatform
+RUN chmod +x /opt/oryx/installPlatform
 RUN mkdir -p /usr/local/share/pip-cache/lib
 RUN chmod -R 777 /usr/local/share/pip-cache
 
