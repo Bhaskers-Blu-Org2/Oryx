@@ -97,3 +97,24 @@ echo
 
 # Write out a sentinel file to indicate downlaod and extraction was successful
 echo > $targetDir/.oryx-sdkdownload-sentinel
+
+
+#------------------
+
+PLATFORM_SETUP_START=$SECONDS
+echo
+echo Downloading and extracting hugo version '0.59.0' to /tmp/oryx/platforms/hugo/0.59.0...
+rm -rf /tmp/oryx/platforms/hugo/0.59.0
+mkdir -p /tmp/oryx/platforms/hugo/0.59.0
+cd /tmp/oryx/platforms/hugo/0.59.0
+PLATFORM_BINARY_DOWNLOAD_START=$SECONDS
+curl -fsSLO --compressed "https://github.com/gohugoio/hugo/releases/download/v0.59.0/hugo_extended_0.59.0_Linux-64bit.tar.gz" >/dev/null 2>&1
+PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))
+echo "Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s)."
+echo Extracting contents...
+tar -xzf hugo_extended_0.59.0_Linux-64bit.tar.gz -C .
+rm -f hugo_extended_0.59.0_Linux-64bit.tar.gz
+PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))
+echo "Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s)."
+echo
+echo > /tmp/oryx/platforms/hugo/0.59.0/.oryx-sdkdownload-sentinel
