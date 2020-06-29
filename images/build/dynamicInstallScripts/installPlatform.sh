@@ -64,6 +64,14 @@ fi
 
 fileName="$platform-$version.tar.gz"
 
+function installDotNetCore() {
+
+}
+
+function installHugo() {
+
+}
+
 PLATFORM_SETUP_START=$SECONDS
 echo
 echo "Downloading and extracting '$platform' version '$version' to '$targetDir'..."
