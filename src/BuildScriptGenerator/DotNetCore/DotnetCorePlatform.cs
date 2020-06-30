@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -26,7 +27,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
         private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
         private readonly IDetectorFactory _detectorFactory;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
@@ -48,7 +48,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="globalJsonSdkResolver">The <see cref="GlobalJsonSdkResolver"/>.</param>
         public DotNetCorePlatform(
             IDotNetCoreVersionProvider versionProvider,
-            DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatform> logger,
             IDetectorFactory detectorFactory,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -57,7 +56,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             GlobalJsonSdkResolver globalJsonSdkResolver)
         {
             _versionProvider = versionProvider;
-            _projectFileProvider = projectFileProvider;
             _logger = logger;
             _detectorFactory = detectorFactory;
             _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
@@ -117,6 +115,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
+            var dotNetCorePlatformDetectorResult = detectorResult as DotNetCorePlatformDetectorResult;
+            if (dotNetCorePlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
             var versionMap = _versionProvider.GetSupportedVersions();
 
             string globalJsonSdkVersion = null;
@@ -144,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion] = globalJsonSdkVersion;
             }
 
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
