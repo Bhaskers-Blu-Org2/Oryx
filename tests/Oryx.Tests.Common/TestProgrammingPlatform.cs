@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -15,7 +16,7 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly bool? _canGenerateScript;
         private readonly string _scriptContent;
         private readonly string _installationScriptContent;
-        private readonly IPlatformDetector _detector;
+        private readonly BuildScriptGenerator.IPlatformDetector _detector;
         private bool _enabled;
         private bool _platformIsEnabledForMultiPlatformBuild;
 
@@ -25,7 +26,7 @@ namespace Microsoft.Oryx.Tests.Common
             bool? canGenerateScript = null,
             string scriptContent = null,
             string installationScriptContent = null,
-            IPlatformDetector detector = null,
+            BuildScriptGenerator.IPlatformDetector detector = null,
             bool enabled = true,
             bool platformIsEnabledForMultiPlatformBuild = true)
         {
@@ -75,7 +76,7 @@ namespace Microsoft.Oryx.Tests.Common
             return Array.Empty<string>();
         }
 
-        public bool IsCleanRepo(ISourceRepo repo)
+        public bool IsCleanRepo(BuildScriptGenerator.ISourceRepo repo)
         {
             return true;
         }

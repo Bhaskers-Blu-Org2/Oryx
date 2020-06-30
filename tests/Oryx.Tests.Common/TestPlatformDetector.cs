@@ -4,10 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public class TestPlatformDetectorUsingPlatformName : IPlatformDetector
+    public class TestPlatformDetectorUsingPlatformName : BuildScriptGenerator.IPlatformDetector
     {
         private readonly string _platformName;
         private readonly string _platformVersion;
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.Tests.Common
         }
     }
 
-    public class TestPlatformDetectorSimpleMatch : IPlatformDetector
+    public class TestPlatformDetectorSimpleMatch : BuildScriptGenerator.IPlatformDetector
     {
         private readonly string _platformVersion;
         private bool _shouldMatch;

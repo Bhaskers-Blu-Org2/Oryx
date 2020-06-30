@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Detector;
+
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
