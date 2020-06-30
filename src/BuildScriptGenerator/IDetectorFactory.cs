@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Hugo;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Detector.Hugo;
@@ -16,12 +9,12 @@ using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
-    internal interface IDetectorFactory
+    public interface IDetectorFactory
     {
         Detector.IPlatformDetector GetDetector(PlatformName platformName);
     }
 
-    internal class DefaultDetectorFactory : IDetectorFactory
+    public class DefaultDetectorFactory : IDetectorFactory
     {
         private readonly IServiceProvider _serviceProvider;
 

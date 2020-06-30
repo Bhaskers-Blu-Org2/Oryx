@@ -70,32 +70,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             detectedVersion = detectedVersion ?? HugoConstants.Version;
             buildScriptGeneratorOptions = buildScriptGeneratorOptions ?? new BuildScriptGeneratorOptions();
             hugoScriptGeneratorOptions = hugoScriptGeneratorOptions ?? new HugoScriptGeneratorOptions();
+            var testDetector = new TestDetector(Detector.PlatformName.Hugo, new Detector.PlatformDetectorResult
+            {
+                Platform = Detector.PlatformName.Hugo.ToString(),
+                PlatformVersion = detectedVersion,
+            });
             return new HugoPlatform(
                 Options.Create(buildScriptGeneratorOptions),
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                new TestHugoPlatformDetector(detectedVersion));
-        }
-
-        private class TestHugoPlatformDetector : HugoPlatformDetector
-        {
-            private readonly string _detectedVersion;
-
-            public TestHugoPlatformDetector(string detectedVersion)
-                : base(new TestEnvironment())
-            {
-                _detectedVersion = detectedVersion;
-            }
-
-            public override PlatformDetectorResult Detect(RepositoryContext context)
-            {
-                return new PlatformDetectorResult
-                {
-                    Platform = HugoConstants.PlatformName,
-                    PlatformVersion = _detectedVersion
-                };
-            }
+                new TestDetectorFactory(testDetector));
         }
     }
 }
