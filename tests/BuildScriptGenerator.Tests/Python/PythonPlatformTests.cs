@@ -371,7 +371,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 Options.Create(pythonScriptGeneratorOptions),
                 pythonVersionProvider,
                 NullLogger<PythonPlatform>.Instance,
-                detector: null,
+                detectorFactory: null,
                 platformInstaller);
         }
 

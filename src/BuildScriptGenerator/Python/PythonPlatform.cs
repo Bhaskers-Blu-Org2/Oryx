@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -60,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonPlatform> _logger;
-        private readonly PythonDetector _detector;
+        private readonly IDetectorFactory _detectorFactory;
         private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -70,21 +69,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <param name="pythonScriptGeneratorOptions">The <see cref="PythonScriptGeneratorOptions"/>.</param>
         /// <param name="versionProvider">The Python version provider.</param>
         /// <param name="logger">The logger of Python platform.</param>
-        /// <param name="detector">The detector of Python platform.</param>
+        /// <param name="detectorFactory">The detector of Python platform.</param>
         /// <param name="platformInstaller">The <see cref="PythonPlatformInstaller"/>.</param>
         public PythonPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
-            PythonDetector detector,
+            IDetectorFactory detectorFactory,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
             _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
             _versionProvider = versionProvider;
             _logger = logger;
-            _detector = detector;
+            _detectorFactory = detectorFactory;
             _platformInstaller = platformInstaller;
         }
 
@@ -114,7 +113,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
             else
             {
-                detectionResult = _detector.Detect(new DetectorContext
+                var detector = _detectorFactory.GetDetector(PlatformName.Python);
+                detectionResult = detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });

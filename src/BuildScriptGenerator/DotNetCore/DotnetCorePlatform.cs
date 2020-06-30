@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -29,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly IDotNetCoreVersionProvider _versionProvider;
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCorePlatform> _logger;
-        private readonly DotNetCoreDetector _detector;
+        private readonly IDetectorFactory _detectorFactory;
         private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly DotNetCorePlatformInstaller _platformInstaller;
@@ -42,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <param name="projectFileProvider">The project file provider.</param>
         /// <param name="environmentSettingsProvider">The environment settings provider.</param>
         /// <param name="logger">The logger of .NET platform.</param>
-        /// <param name="detector">The detector of .NET platform.</param>
+        /// <param name="detectorFactory">The detector of .NET platform.</param>
         /// <param name="commonOptions">The build options for BuildScriptGenerator.</param>
         /// <param name="dotNetCoreScriptGeneratorOptions">The options if .NET platform.</param>
         /// <param name="platformInstaller">The <see cref="DotNetCorePlatformInstaller"/>.</param>
@@ -51,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IDotNetCoreVersionProvider versionProvider,
             DefaultProjectFileProvider projectFileProvider,
             ILogger<DotNetCorePlatform> logger,
-            DotNetCoreDetector detector,
+            IDetectorFactory detectorFactory,
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             DotNetCorePlatformInstaller platformInstaller,
@@ -60,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             _versionProvider = versionProvider;
             _projectFileProvider = projectFileProvider;
             _logger = logger;
-            _detector = detector;
+            _detectorFactory = detectorFactory;
             _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
             _commonOptions = commonOptions.Value;
             _platformInstaller = platformInstaller;
@@ -96,7 +95,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
             else
             {
-                detectionResult = _detector.Detect(new DetectorContext
+                var detector = _detectorFactory.GetDetector(PlatformName.DotNetCore);
+                detectionResult = detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });

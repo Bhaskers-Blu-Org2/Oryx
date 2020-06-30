@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 Options.Create(commonOptions),
                 phpVersionProvider,
                 NullLogger<PhpPlatform>.Instance,
-                detector: null,
+                detectorFactory: null,
                 phpInstaller: null,
                 phpComposerInstaller: null);
         }

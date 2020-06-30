@@ -14,7 +14,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -27,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly IPhpVersionProvider _phpVersionProvider;
         private readonly ILogger<PhpPlatform> _logger;
-        private readonly PhpDetector _detector;
+        private readonly IDetectorFactory _detectorFactory;
         private readonly PhpPlatformInstaller _phpInstaller;
         private readonly PhpComposerInstaller _phpComposerInstaller;
 
@@ -37,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <param name="phpScriptGeneratorOptions">The options of phpScriptGenerator.</param>
         /// <param name="phpVersionProvider">The PHP version provider.</param>
         /// <param name="logger">The logger of PHP platform.</param>
-        /// <param name="detector">The detector of PHP platform.</param>
+        /// <param name="detectorFactory">The detector of PHP platform.</param>
         /// <param name="commonOptions">The <see cref="BuildScriptGeneratorOptions"/>.</param>
         /// <param name="phpComposerInstaller">The <see cref="PhpComposerInstaller"/>.</param>
         /// <param name="phpInstaller">The <see cref="PhpPlatformInstaller"/>.</param>
@@ -46,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IPhpVersionProvider phpVersionProvider,
             ILogger<PhpPlatform> logger,
-            PhpDetector detector,
+            IDetectorFactory detectorFactory,
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller)
         {
@@ -54,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             _commonOptions = commonOptions.Value;
             _phpVersionProvider = phpVersionProvider;
             _logger = logger;
-            _detector = detector;
+            _detectorFactory = detectorFactory;
             _phpInstaller = phpInstaller;
             _phpComposerInstaller = phpComposerInstaller;
         }
@@ -94,7 +93,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                detectionResult = _detector.Detect(new DetectorContext
+                var detector = _detectorFactory.GetDetector(PlatformName.Php);
+                detectionResult = detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });

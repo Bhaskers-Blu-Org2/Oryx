@@ -12,7 +12,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.Node;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
@@ -69,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider _nodeVersionProvider;
         private readonly ILogger<NodePlatform> _logger;
-        private readonly NodeDetector _detector;
+        private readonly IDetectorFactory _detectorFactory;
         private readonly IEnvironment _environment;
         private readonly NodePlatformInstaller _platformInstaller;
 
@@ -79,14 +78,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <param name="nodeScriptGeneratorOptions">The options for nodeScriptGenerator.</param>
         /// <param name="nodeVersionProvider">The Node.js version provider.</param>
         /// <param name="logger">The logger of Node.js platform.</param>
-        /// <param name="detector">The detector of Node.js platform.</param>
+        /// <param name="detectorFactory">The detector of Node.js platform.</param>
         /// <param name="environment">The environment of Node.js platform.</param>
         public NodePlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
             ILogger<NodePlatform> logger,
-            NodeDetector detector,
+            IDetectorFactory detectorFactory,
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller)
         {
@@ -94,7 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             _nodeVersionProvider = nodeVersionProvider;
             _logger = logger;
-            _detector = detector;
+            _detectorFactory = detectorFactory;
             _environment = environment;
             _platformInstaller = nodePlatformInstaller;
         }
@@ -126,7 +125,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                detectionResult = _detector.Detect(new DetectorContext
+                var detector = _detectorFactory.GetDetector(PlatformName.Node);
+                detectionResult = detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });

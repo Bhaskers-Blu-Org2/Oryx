@@ -609,7 +609,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 Options.Create(nodeScriptGeneratorOptions),
                 nodeVersionProvider,
                 NullLogger<NodePlatform>.Instance,
-                detector: null,
+                detectorFactory: null,
                 new TestEnvironment(),
                 new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance));
         }
